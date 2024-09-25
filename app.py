@@ -1,32 +1,30 @@
+# main.py
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from models import Base, Band, Venue, Concert
+from models import Band, Venue, Concert
 
-# Database setup
+# Create the database engine
 engine = create_engine('sqlite:///concerts.db')
-Base.metadata.create_all(engine)
-
 Session = sessionmaker(bind=engine)
 session = Session()
 
-# Example usage
+# Create instances
 def main():
-    # Create some bands and venues
-    band1 = Band(name="The Beatles", hometown="Liverpool")
-    venue1 = Venue(title="Royal Albert Hall", city="London")
-    
-    session.add(band1)
-    session.add(venue1)
-    session.commit()
+    band = Band(name="The Rockers", hometown="New York")
+    venue = Venue(title="Big Arena", city="New York")
+    concert = Concert(band=band, venue=venue, date="2024-10-01")
 
-    # Create a concert
-    concert = Concert(band_id=band1.id, venue_id=venue1.id, date="2024-10-01")
+    # Add to session and commit
+    session.add(band)
+    session.add(venue)
     session.add(concert)
     session.commit()
 
-    # Fetch and print introduction
-    fetched_concert = session.query(Concert).first()
-    print(fetched_concert.introduction())
+    # Querying
+    first_band = session.query(Band).first()
+    print(first_band.concerts)  # Should list concerts for this band
+    print(first_band.concerts[0].introduction())  # Print introduction
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
